@@ -161,16 +161,17 @@ rl.setPrompt("> (x,y) 형태로 좌표입력(좌표사이는 -으로 구분할 �
 rl.prompt();
 let input;
 rl.on("line", function (line) {
-    // try {
-    const points = new Input(line).getPoints();
-    console.log(points);
-    const shape = ShapeFactory.createShape(points);
-    shape.print();
-    shape.printCalc();
-    // }catch{
-    //     console.log('에러입니다. 다시 입력해주세요.(숫자의 최대 범위-24)')
-    //     rl.prompt()
-    // }
+    try {
+        const points = new Input(line).getPoints();
+        console.log(points);
+        const shape = ShapeFactory.createShape(points);
+        shape.print();
+        shape.printCalc();
+    }
+    catch (e) {
+        console.error(`에러입니다. 다시 입력해주세요.(숫자의 최대 범위-24):${e}`);
+        rl.prompt();
+    }
 });
 rl.on("close", function () {
     process.exit();
