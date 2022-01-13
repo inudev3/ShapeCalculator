@@ -42,27 +42,32 @@ class Shape {
     }
     print() {
         let star = '';
-        for (const point of this.points) {
-            for (let i = 0; i < 30; i++) {
-                for (let j = 0; j < 30; j++) {
+        for (let i = 25; i > 0; i--) {
+            for (let j = 25; j > 0; j--) {
+                let draw = false;
+                for (const point of this.allPoints) {
                     if (point.x === j && point.y === i) {
-                        star += '*';
-                    }
-                    else {
-                        star += ' ';
+                        draw = true;
+                        break;
                     }
                 }
+                star += draw ? '*' : ' ';
             }
+            star += '\n';
         }
         console.log(star);
-        console.log('넓이:', this.area);
+    }
+    printCalc() {
+        console.log(`넓이:${this.area}`);
     }
 }
 class Line extends Shape {
     constructor(points) {
         super(points);
     }
-    get area() { throw 'no area calculated'; }
+    get area() {
+        throw 'no area calculated';
+    }
     get dist() {
         const [pointA, pointB] = this.allPoints;
         return Line.calcDist(pointA, pointB);
@@ -70,22 +75,8 @@ class Line extends Shape {
     static calcDist(pointA, pointB) {
         return Math.sqrt((pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2);
     }
-    print() {
-        let star = '';
-        for (const point of this.allPoints) {
-            for (let i = 0; i < 30; i++) {
-                for (let j = 0; j < 30; j++) {
-                    if (point.x === j && point.y === i) {
-                        star += '*';
-                    }
-                    else {
-                        star += ' ';
-                    }
-                }
-            }
-        }
-        console.log(star);
-        console.log('거리:', this.dist);
+    printCalc() {
+        console.log(`거리:${this.dist}`);
     }
 }
 class Tri extends Shape {
@@ -103,13 +94,15 @@ class Tri extends Shape {
         const line1 = Line.calcDist(pointA, pointB);
         const line2 = Line.calcDist(pointB, pointC);
         const line3 = Line.calcDist(pointC, pointA);
-        const s = (line1 + line2 + line3) / 3;
+        const s = (line1 + line2 + line3) / 2;
         return Math.sqrt(s * (s - line1) * (s - line2) * (s - line3));
     }
 }
 class Rectangle extends Shape {
-    constructor(points) {
+    constructor(points, width = null, height = null) {
         super(points);
+        this.width = width;
+        this.height = height;
         // else throw "Invalid Rectangle"
     }
     get area() {
@@ -135,7 +128,7 @@ class Polygon extends Shape {
     static calcArea(points) {
         const standard = points[0];
         let area = 0;
-        for (let i = 1; i < points.length; i++) {
+        for (let i = 1; i < points.length - 1; i++) {
             area += Tri.calcArea(standard, points[i], points[i + 1]);
         }
         return area;
@@ -147,6 +140,7 @@ class Input {
         this.points = [];
         line.split('-').forEach(coors => {
             const xandy = coors.substring(1, coors.length - 1).split(',').map(str => parseInt(str.trim()));
+            console.log(xandy);
             if (xandy[0] > 24 || xandy[1] > 24) {
                 throw '24 초과 불가';
             }
@@ -167,15 +161,16 @@ rl.setPrompt("> (x,y) 형태로 좌표입력(좌표사이는 -으로 구분할 �
 rl.prompt();
 let input;
 rl.on("line", function (line) {
-    try {
-        const points = new Input(line).getPoints();
-        console.log(points);
-        const shape = ShapeFactory.createShape(points);
-        shape.print();
-    }
-    catch (_a) {
-        console.log('에러입니다. 다시 입력해주세요.(숫자의 최대 범위-24)');
-    }
+    // try {
+    const points = new Input(line).getPoints();
+    console.log(points);
+    const shape = ShapeFactory.createShape(points);
+    shape.print();
+    shape.printCalc();
+    // }catch{
+    //     console.log('에러입니다. 다시 입력해주세요.(숫자의 최대 범위-24)')
+    //     rl.prompt()
+    // }
 });
 rl.on("close", function () {
     process.exit();

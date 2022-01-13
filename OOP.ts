@@ -31,49 +31,50 @@ abstract class Shape {
     abstract get area(): number
     print(){
         let star='';
-        for(const point of this.points){
-            for(let i=0; i<30; i++){
-                for(let j=0; j<30; j++){
-                    if(point.x===j && point.y===i){star+='*'}
-                    else{
-                        star+= ' '
+
+        for (let i = 25; i > 0; i--) {
+            for (let j = 25; j >0; j--) {
+                let draw = false
+                for(const point of this.allPoints){
+                    if(point.x===j&& point.y===i){
+                        draw = true
+                        break;
                     }
                 }
+                star += draw? '*': ' '
             }
+            star += '\n'
+
         }
         console.log(star)
-        console.log('넓이:', this.area)
+    }
+    printCalc(){
+        console.log(`넓이:${this.area}`)
     }
 }
 
 
-class Line extends Shape{
-    constructor(points:Point[]) {
+class Line extends Shape {
+    constructor(points: Point[]) {
         super(points)
     }
-    get area():number{throw 'no area calculated'}
-    get dist():number{
+
+    get area(): number {
+        throw 'no area calculated'
+    }
+
+    get dist(): number {
         const [pointA, pointB] = this.allPoints;
         return Line.calcDist(pointA, pointB)
     }
-    static calcDist(pointA:Point, pointB:Point){
-        return Math.sqrt((pointA.x-pointB.x)**2+ (pointA.y-pointB.y)**2)
+
+    static calcDist(pointA: Point, pointB: Point) {
+        return Math.sqrt((pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2)
     }
-    print(){
-        let star=''
-        for(const point of this.allPoints){
-            for(let i=0; i<30; i++){
-                for(let j=0; j<30; j++){
-                    if(point.x===j && point.y===i){star+='*'}
-                    else{
-                        star+=' '
-                    }
-                }
-            }
-        }
-        console.log(star);
-        console.log('거리:', this.dist)
-    }
+
+  printCalc() {
+      console.log(`거리:${this.dist}`)
+  }
 }
 
 
@@ -90,14 +91,14 @@ class Tri extends Shape{
         const line1 = Line.calcDist(pointA, pointB)
         const line2 = Line.calcDist(pointB, pointC)
         const line3 =Line.calcDist(pointC, pointA)
-        const s = (line1+line2+line3)/3
+        const s = (line1+line2+line3)/2
         return Math.sqrt(s*(s-line1)*(s-line2)*(s-line3))
     }
 
 
 }
 class Rectangle extends Shape{
-    constructor(points:Point[]) {
+    constructor(points:Point[], private readonly width:number|null=null, private readonly height:number|null=null) {
         super(points)
         // else throw "Invalid Rectangle"
     }
@@ -123,7 +124,7 @@ class Polygon extends Shape{
     static calcArea(points:Point[]){
         const standard = points[0]
         let area = 0
-        for(let i=1; i<points.length; i++){
+        for(let i=1; i<points.length-1; i++){
             area+=Tri.calcArea(standard, points[i], points[i+1])
         }
         return area;
@@ -135,6 +136,7 @@ class Input{
         this.points = [];
         line.split('-').forEach(coors=>{
             const xandy:number[] = coors.substring(1,coors.length-1).split(',').map(str=>parseInt(str.trim()))
+            console.log(xandy)
             if(xandy[0]>24 || xandy[1]>24){throw '24 초과 불가';};
             this.points.push(new Point(xandy[0], xandy[1]));
         })
@@ -154,15 +156,16 @@ rl.setPrompt("> (x,y) 형태로 좌표입력(좌표사이는 -으로 구분할 �
 rl.prompt()
 let input;
 rl.on("line", function(line:string) {
-        try {
+        // try {
             const points = new Input(line).getPoints();
             console.log(points);
             const shape = ShapeFactory.createShape(points);
             shape.print();
-        }catch{
-            console.log('에러입니다. 다시 입력해주세요.(숫자의 최대 범위-24)')
-            rl.prompt()
-        }
+            shape.printCalc();
+        // }catch{
+        //     console.log('에러입니다. 다시 입력해주세요.(숫자의 최대 범위-24)')
+        //     rl.prompt()
+        // }
 
 })
 rl.on("close", function() {
