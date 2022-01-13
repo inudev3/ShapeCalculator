@@ -99,6 +99,7 @@ class Tri extends Shape{
 }
 class Rectangle extends Shape{
     constructor(points:Point[], private readonly width:number|null=null, private readonly height:number|null=null) {
+
         super(points)
         // else throw "Invalid Rectangle"
     }
