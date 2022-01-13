@@ -30,16 +30,18 @@ abstract class Shape {
     }
     abstract get area(): number
     print(){
+        let star='';
         for(const point of this.points){
             for(let i=0; i<30; i++){
                 for(let j=0; j<30; j++){
-                    if(point.x===j && point.y===i){console.log('*')}
+                    if(point.x===j && point.y===i){star+='*'}
                     else{
-                        console.log(' ')
+                        star+= ' '
                     }
                 }
             }
         }
+        console.log(star)
         console.log('넓이:', this.area)
     }
 }
@@ -58,16 +60,18 @@ class Line extends Shape{
         return Math.sqrt((pointA.x-pointB.x)**2+ (pointA.y-pointB.y)**2)
     }
     print(){
+        let star=''
         for(const point of this.allPoints){
-            for(let i=0; i<150; i++){
-                for(let j=0; j<150; j++){
-                    if(point.x===j && point.y===i){console.log('*')}
+            for(let i=0; i<30; i++){
+                for(let j=0; j<30; j++){
+                    if(point.x===j && point.y===i){star+='*'}
                     else{
-                        console.log(' ')
+                        star+=' '
                     }
                 }
             }
         }
+        console.log(star);
         console.log('거리:', this.dist)
     }
 }
@@ -146,17 +150,19 @@ const rl = readline.createInterface({
     output: process.stdout
 })
 
-rl.setPrompt("> (x,y) 형태로 좌표입력(좌표사이는 -으로 구분할 것):")
+rl.setPrompt("> (x,y) 형태로 좌표입력(좌표사이는 -으로 구분할 것, 범위는 최대 24):")
 rl.prompt()
 let input;
 rl.on("line", function(line:string) {
-
-        const points = new Input(line).getPoints();
-        console.log(points);
-        const shape = ShapeFactory.createShape(points);
-        shape.print();
-        shape.print();
-
+        try {
+            const points = new Input(line).getPoints();
+            console.log(points);
+            const shape = ShapeFactory.createShape(points);
+            shape.print();
+        }catch{
+            console.log('에러입니다. 다시 입력해주세요.(숫자의 최대 범위-24)')
+            rl.prompt()
+        }
 
 })
 rl.on("close", function() {
